@@ -2,9 +2,10 @@ import userRepository from "../repositories/user.repository";
 import {
   hashPassword,
   comparePassword,
-  generateAccessToken,
-  generateRefreshToken,
 } from "../utils/auth";
+import User from "@/src/models/user.model";
+import bcrypt from "bcryptjs";
+import { createAccessToken } from "@/src/utils/auth";
 
 async function register(data: any) {
   // CHECK IF USER EXISTS
@@ -50,23 +51,22 @@ async function register(data: any) {
 
   // SAVE USER
   const user = await userRepository.createUser(newUserObj);
+  const token = createAccessToken(user._id);
 
   return {
-    id: user._id,
-    email: user.email,
-    name: user.name,
+    user: { id: user._id, email: user.email, name: user.name },
+    token,
   };
 }
 
 async function login(email: string, password: string) {
-  const user: any = await userRepository.findByEmail(email);
+  const user = await User.findOne({ email });
   if (!user) throw new Error("Invalid credentials");
 
-  const valid = await comparePassword(password, user.password);
-  if (!valid) throw new Error("Invalid credentials");
+  const match = await comparePassword(password, user.password);
+  if (!match) throw new Error("Invalid credentials");
 
-  const accessToken = generateAccessToken({ id: user._id, email: user.email });
-  const refreshToken = generateRefreshToken({ id: user._id });
+  const token = createAccessToken(user._id.toString());
 
   return {
     user: {
@@ -74,10 +74,7 @@ async function login(email: string, password: string) {
       name: user.name,
       email: user.email,
     },
-    tokens: {
-      accessToken,
-      refreshToken,
-    },
+    token,
   };
 }
 

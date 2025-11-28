@@ -1,23 +1,44 @@
 import resultsRepo from "@/src/repositories/gameResults.repository";
 import { connectDB } from "@/src/config/db";
+import { requireAuth } from "@/src/middlewares/auth.middleware";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  const { user, error } = requireAuth(req);
+  if (error) return error;
+
   await connectDB();
-  const { userId, date } = await req.json();
 
-  const today = new Date(date);
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
+  try {
+    const { date } = await req.json();
 
-  const todayResults = await resultsRepo.getUserResultsByDay(userId, today);
-  const yesterdayResults = await resultsRepo.getUserResultsByDay(
-    userId,
-    yesterday
-  );
+    if (!date) {
+      return NextResponse.json(
+        { message: "Date is required" },
+        { status: 400 }
+      );
+    }
 
-  return NextResponse.json({
-    today: todayResults,
-    yesterday: yesterdayResults,
-  });
+    const targetDate = new Date(date);
+    if (isNaN(targetDate.getTime())) {
+      return NextResponse.json(
+        { message: "Invalid date format" },
+        { status: 400 }
+      );
+    }
+
+    const today = await resultsRepo.getUserResultsByDay(user.id, targetDate);
+
+    const yesterday = new Date(targetDate);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const yday = await resultsRepo.getUserResultsByDay(user.id, yesterday);
+
+    return NextResponse.json({ today, yesterday: yday });
+  } catch {
+    return NextResponse.json(
+      { message: "Failed to fetch results" },
+      { status: 500 }
+    );
+  }
 }

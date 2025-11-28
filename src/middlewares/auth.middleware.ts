@@ -2,18 +2,41 @@ import { NextResponse } from "next/server";
 import { verifyAccessToken } from "../utils/auth";
 
 export function requireAuth(req: Request) {
-  const auth = req.headers.get("authorization");
+  const cookieHeader = req.headers.get("cookie");
 
-  if (!auth) {
-    return NextResponse.json({ message: "No token provided" }, { status: 401 });
+  if (!cookieHeader) {
+    return {
+      error: NextResponse.json(
+        { message: "Authentication cookie missing" },
+        { status: 401 }
+      ),
+    };
   }
 
-  const token = auth.split(" ")[1];
+  const token = cookieHeader
+    .split(";")
+    .map((c) => c.trim())
+    .find((c) => c.startsWith("token="))
+    ?.split("=")[1];
+
+  if (!token) {
+    return {
+      error: NextResponse.json(
+        { message: "Token missing in cookies" },
+        { status: 401 }
+      ),
+    };
+  }
 
   try {
     const decoded = verifyAccessToken(token);
-    return decoded;
-  } catch (err) {
-    return NextResponse.json({ message: "Invalid token" }, { status: 401 });
+    return { user: decoded };
+  } catch {
+    return {
+      error: NextResponse.json(
+        { message: "Invalid or expired token" },
+        { status: 401 }
+      ),
+    };
   }
 }
