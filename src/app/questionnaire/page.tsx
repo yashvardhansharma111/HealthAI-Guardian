@@ -32,12 +32,14 @@ export default function QuestionnairePage() {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(30);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
   const keystrokeTrackerRef = useRef<KeystrokeTracker | null>(null);
   const recordingStartTimeRef = useRef<number>(0);
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -57,8 +59,20 @@ export default function QuestionnairePage() {
     
     return () => {
       stopRecording();
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    // Reset timer when question changes
+    setTimeRemaining(30);
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+  }, [currentQuestion]);
 
   const startSession = async () => {
     try {
@@ -117,11 +131,31 @@ export default function QuestionnairePage() {
       recordingStartTimeRef.current = Date.now();
       mediaRecorder.start();
       setIsRecording(true);
+      setTimeRemaining(30);
 
       // Start keystroke tracking
       if (keystrokeTrackerRef.current) {
         keystrokeTrackerRef.current.start();
       }
+
+      // Start countdown timer
+      timerIntervalRef.current = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev <= 1) {
+            // Auto-submit when timer reaches 0
+            if (timerIntervalRef.current) {
+              clearInterval(timerIntervalRef.current);
+              timerIntervalRef.current = null;
+            }
+            // Auto-submit after a brief delay to ensure recording is saved
+            setTimeout(() => {
+              submitQuestion();
+            }, 100);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -132,6 +166,11 @@ export default function QuestionnairePage() {
   };
 
   const stopRecording = () => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
@@ -352,7 +391,24 @@ export default function QuestionnairePage() {
 
               {/* Video Preview */}
               <div className="space-y-2">
-                <Label>Video Recording</Label>
+                <div className="flex items-center justify-between">
+                  <Label>Video Recording</Label>
+                  {isRecording && (
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm font-semibold text-primary">
+                        {timeRemaining}s
+                      </div>
+                      <div className="w-16 bg-muted rounded-full h-2">
+                        <motion.div
+                          initial={{ width: "100%" }}
+                          animate={{ width: `${(timeRemaining / 30) * 100}%` }}
+                          transition={{ duration: 1, ease: "linear" }}
+                          className="h-2 rounded-full bg-primary"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden">
                   <video
                     ref={videoRef}
@@ -366,16 +422,30 @@ export default function QuestionnairePage() {
                       <div className="text-center">
                         <Video className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
                         <p className="text-sm text-muted-foreground">
-                          Click "Start Recording" to begin
+                          Click "Start Recording" to begin (30 seconds per question)
                         </p>
                       </div>
                     </div>
                   )}
                   {isRecording && (
-                    <div className="absolute top-2 right-2 flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full text-sm">
-                      <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                      Recording
-                    </div>
+                    <>
+                      <div className="absolute top-2 right-2 flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full text-sm">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                        Recording
+                      </div>
+                      {timeRemaining <= 5 && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                          <motion.div
+                            initial={{ scale: 1 }}
+                            animate={{ scale: [1, 1.2, 1] }}
+                            transition={{ repeat: Infinity, duration: 0.5 }}
+                            className="text-4xl font-bold text-red-500"
+                          >
+                            {timeRemaining}
+                          </motion.div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -395,8 +465,8 @@ export default function QuestionnairePage() {
                 />
                 <p className="text-xs text-muted-foreground">
                   {isRecording
-                    ? "Recording in progress. Please type your answer."
-                    : "Please start recording before typing your answer."}
+                    ? `Recording in progress. ${timeRemaining} seconds remaining. Please type your answer.`
+                    : "Please start recording before typing your answer. You have 30 seconds per question."}
                 </p>
               </div>
 
