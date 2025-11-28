@@ -15,15 +15,23 @@ async function login(body: any) {
 
     const response = await authService.login(data.email, data.password);
 
-    const res = NextResponse.json(success({ response }, 200));
+    const res = NextResponse.json(
+      success(
+        {
+          user: response.user,
+          tokenSet: true,
+        },
+        200
+      )
+    );
 
-    // Set HttpOnly token cookie
+    // Set HttpOnly cookie
     res.cookies.set("token", response.token, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60, // 7 days
+      maxAge: 7 * 24 * 60 * 60,
     });
 
     return res;

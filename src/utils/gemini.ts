@@ -40,17 +40,16 @@ ${prompt}
       headers: { "Content-Type": "application/json" },
     });
 
-    let raw = res.data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-    // Remove any accidental markdown/code blocks
-    raw = raw
-      .replace(/```json/gi, "")
-      .replace(/```/g, "")
-      .trim();
+    const raw =
+      res.data.candidates?.[0]?.content?.parts?.[0]?.text ??
+      res.data.candidates?.[0]?.text ??
+      res.data.text ??
+      res.data.output ??
+      res.data;
 
     // Try parsing. If Gemini outputs weird JSON, fix common issues.
     try {
-      return JSON.parse(raw);
+      return typeof raw === "string" ? raw : JSON.stringify(raw);
     } catch {
       // Fallback auto-fix: remove trailing commas etc.
       const cleaned = raw
@@ -60,7 +59,7 @@ ${prompt}
 
       return JSON.parse(cleaned);
     }
-  } catch (err: any) {
+  } catch (err) {
     console.error("Gemini API Error:", err.response?.data || err.message);
     throw new Error("Gemini request failed");
   }
