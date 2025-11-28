@@ -48,19 +48,36 @@ ${prompt}
       res.data;
 
     // Try parsing. If Gemini outputs weird JSON, fix common issues.
-    try {
-      return typeof raw === "string" ? raw : JSON.stringify(raw);
-    } catch {
-      // Fallback auto-fix: remove trailing commas etc.
-      const cleaned = raw
-        .replace(/\,(?!\s*?[{\[\"'\w])/g, "") // trailing commas
-        .replace(/\n/g, "")
-        .trim();
+    if (typeof raw === "string") {
+      try {
+        // Remove markdown code blocks if present
+        let cleaned = raw
+          .replace(/```json\n?/g, "")
+          .replace(/```\n?/g, "")
+          .replace(/\,(?!\s*?[{\[\"'\w])/g, "") // trailing commas
+          .replace(/\n/g, " ")
+          .trim();
 
-      return JSON.parse(cleaned);
+        // Try to parse as JSON
+        return JSON.parse(cleaned);
+      } catch (parseError: any) {
+        // If parsing fails, return the raw string and let the caller handle it
+        console.error("Failed to parse Gemini response:", parseError?.message || parseError);
+        return raw;
+      }
+    } else if (typeof raw === "object") {
+      // Already an object, return as is
+      return raw;
+    } else {
+      // Convert to string and try parsing
+      try {
+        return JSON.parse(String(raw));
+      } catch {
+        return raw;
+      }
     }
-  } catch (err) {
-    console.error("Gemini API Error:", err.response?.data || err.message);
+  } catch (err: any) {
+    console.error("Gemini API Error:", err?.response?.data || err?.message || err);
     throw new Error("Gemini request failed");
   }
 }

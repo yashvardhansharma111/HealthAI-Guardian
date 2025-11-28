@@ -6,6 +6,7 @@ import { useAuth } from "@/app/hooks/useAuth";
 import { motion } from "framer-motion";
 import { Shield, Loader2 } from "lucide-react";
 import Navbar from "@/app/components/Navbar";
+import GamesSection from "@/app/components/GamesSection";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -61,7 +62,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -95,6 +96,14 @@ export default function DashboardPage() {
               <p className="text-sm text-muted-foreground mt-2">Total experience points</p>
             </motion.div>
           </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <GamesSection />
+          </motion.div>
         </motion.div>
       </main>
     </div>

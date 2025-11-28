@@ -27,7 +27,7 @@ export async function GET(req: Request) {
       success(
         {
           user: {
-            id: user._id,
+            id: user._id?.toString() || user.id?.toString(),
             email: user.email,
             name: user.name,
             age: user.age,

@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { requireAuth } from "@/src/middlewares/auth.middleware";
-import { requireRateLimit } from "@/src/middlewares/rateLimit.middleware";
+import { requireAuth } from "@/middlewares/auth.middleware";
+import { requireRateLimit } from "@/middlewares/rateLimit.middleware";
 import {
   generateVisuospatialSession,
   saveVisuospatialResult,
-} from "@/src/services/games/visuospatial.service";
-import { connectDB } from "@/src/config/db";
+} from "@/services/games/visuospatial.service";
+import { connectDB } from "@/config/db";
 
 export async function GET(req: Request) {
   const { error: rlErr } = requireRateLimit(req);

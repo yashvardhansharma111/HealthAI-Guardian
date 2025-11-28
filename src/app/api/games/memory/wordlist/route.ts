@@ -3,8 +3,8 @@ import { requireRateLimit } from "../../../../../middlewares/rateLimit.middlewar
 import {
   generateWordList,
   saveWordRecallResult,
-} from "@/src/services/games/memory.service";
-import { connectDB } from "@/src/config/db";
+} from "@/services/games/memory.service";
+import { connectDB } from "@/config/db";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -18,10 +18,34 @@ export async function GET(req: Request) {
 
   try {
     const result = await generateWordList();
-    return NextResponse.json(result);
-  } catch {
+    
+    // Validate the result structure
+    if (!result || !result.questions || !Array.isArray(result.questions)) {
+      console.error("Invalid word list result:", result);
+      return NextResponse.json(
+        { message: "Invalid game data generated" },
+        { status: 500 }
+      );
+    }
+
+    // Validate each question has words
+    const validQuestions = result.questions.filter((q: any) => 
+      q && q.data && Array.isArray(q.data.words) && q.data.words.length > 0
+    );
+
+    if (validQuestions.length === 0) {
+      console.error("No valid questions with words found");
+      return NextResponse.json(
+        { message: "No valid questions generated" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ questions: validQuestions });
+  } catch (error: any) {
+    console.error("Word list generation error:", error);
     return NextResponse.json(
-      { message: "Failed to generate memory task" },
+      { message: error.message || "Failed to generate memory task" },
       { status: 500 }
     );
   }

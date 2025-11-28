@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { requireAuth } from "@/src/middlewares/auth.middleware";
-import { requireRateLimit } from "@/src/middlewares/rateLimit.middleware";
-import { generateVisuospatialSession } from "@/src/services/games/visuospatial.service";
-import { connectDB } from "@/src/config/db";
+import { requireAuth } from "@/middlewares/auth.middleware";
+import { requireRateLimit } from "@/middlewares/rateLimit.middleware";
+import { generateVisuospatialSession } from "@/services/games/visuospatial.service";
+import { connectDB } from "@/config/db";
 
 export async function GET(req: Request) {
   const { error: rateErr } = requireRateLimit(req);

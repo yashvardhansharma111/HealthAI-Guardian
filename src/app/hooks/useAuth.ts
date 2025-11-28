@@ -17,7 +17,10 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkAuth();
+    // Only check auth on client side
+    if (typeof window !== "undefined") {
+      checkAuth();
+    }
   }, []);
 
   const getToken = (): string | null => {
@@ -59,12 +62,20 @@ export function useAuth() {
           removeToken();
         }
       } else {
+        // Token might be invalid, clear it
         setUser(null);
         removeToken();
       }
     } catch (error) {
-      setUser(null);
-      removeToken();
+      console.error("Auth check error:", error);
+      // Don't clear token on network errors, only on auth failures
+      if (error instanceof TypeError) {
+        // Network error, keep token but set user to null temporarily
+        setUser(null);
+      } else {
+        setUser(null);
+        removeToken();
+      }
     } finally {
       setLoading(false);
     }
@@ -97,9 +108,18 @@ export function useAuth() {
     return !!(user?.age && user?.gender);
   };
 
-  const login = (token: string, userData: User) => {
+  const login = async (token: string, userData: User) => {
+    // Save token first
     setToken(token);
+    // Set user immediately for instant feedback
     setUser(userData);
+    setLoading(false);
+    // Then verify the token works by checking auth in background (this will update user with full profile)
+    // Don't await this to avoid blocking the UI
+    checkAuth().catch((error) => {
+      console.error("Login verification error:", error);
+      // Keep the user data even if checkAuth fails
+    });
   };
 
   const logout = async () => {

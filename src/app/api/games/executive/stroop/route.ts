@@ -1,11 +1,11 @@
 import {
   generateStroopStimulus,
   saveStroopResult,
-} from "@/src/services/games/executive.service";
-import { connectDB } from "@/src/config/db";
+} from "@/services/games/executive.service";
+import { connectDB } from "@/config/db";
 
 import { NextResponse } from "next/server";
-import { requireAuth } from "@/src/middlewares/auth.middleware";
+import { requireAuth } from "@/middlewares/auth.middleware";
 
 export async function GET(req: Request) {
   const { error } = requireAuth(req);

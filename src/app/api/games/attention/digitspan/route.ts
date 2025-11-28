@@ -1,8 +1,8 @@
 import {
   generateDigitSpan,
   saveDigitSpanResult,
-} from "@/src/services/games/attention.service";
-import { connectDB } from "@/src/config/db";
+} from "@/services/games/attention.service";
+import { connectDB } from "@/config/db";
 import { requireAuth } from "../../../../../middlewares/auth.middleware";
 import { NextResponse } from "next/server";
 

@@ -11,9 +11,10 @@ const loginSchema = z.object({
 
 async function login(body: any) {
   try {
-    const data = loginSchema.parse(body);
+    // Validate input
+    const validatedData = loginSchema.parse(body);
 
-    const response = await authService.login(data.email, data.password);
+    const response = await authService.login(validatedData.email, validatedData.password);
 
     const res = NextResponse.json(
       success(

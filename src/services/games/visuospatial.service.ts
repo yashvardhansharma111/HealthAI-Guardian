@@ -1,67 +1,88 @@
-import { VISUOSPATIAL_IMAGES } from "@/src/data/visuospatialBaseImages";
-import { generateWithGemini } from "@/src/utils/gemini";
-import VisuospatialResult from "@/src/models/visuospatialResult.model";
+import { VISUOSPATIAL_IMAGES } from "@/data/visuospatialBaseImages";
+import { generateWithGemini } from "@/utils/gemini";
+import VisuospatialResult from "@/models/visuospatialResult.model";
 
 export async function generateVisuospatialSession() {
-  // backend picks random Cloudinary URL
-  const baseImageUrl =
-    VISUOSPATIAL_IMAGES[Math.floor(Math.random() * VISUOSPATIAL_IMAGES.length)];
+  // Pick random images for the session (3 different images)
+  const selectedImages = [];
+  const availableImages = [...VISUOSPATIAL_IMAGES];
+  
+  // Select 3 random images (or as many as available)
+  const numQuestions = Math.min(3, availableImages.length);
+  for (let i = 0; i < numQuestions; i++) {
+    const randomIndex = Math.floor(Math.random() * availableImages.length);
+    selectedImages.push(availableImages[randomIndex]);
+    availableImages.splice(randomIndex, 1); // Remove to avoid duplicates
+  }
 
-  const clinicianInstruction = await generateWithGemini(`
-      You are a clinical neuropsychologist.
-      Write a one-sentence instruction (max 25 words) to compare two similar images.
-  `);
+  // Fallback instruction if Gemini fails
+  const fallbackInstruction = "Look at this image carefully and describe in detail what you see. Be specific about objects, people, colors, and any other details you notice.";
 
-  const variants = [
-    {
-      id: 1,
-      transform: { rotate: 90, mirror: false },
-      isSame: true,
-    },
-    {
-      id: 2,
-      transform: { rotate: 0, mirror: true },
-      isSame: false,
-    },
-    {
-      id: 3,
-      transform: {
-        rotate: 0,
-        mirror: false,
-        highlightRemovedArea: { x: 0.6, y: 0.22, width: 0.12, height: 0.12 },
-      },
-      isSame: false,
-    },
-  ];
+  let clinicianInstruction = fallbackInstruction;
 
-  const questions = variants.map((v) => ({
-    id: v.id,
+  try {
+    const prompt = `
+      You are a clinical neuropsychologist conducting a visual perception test.
+      Write a clear, one-sentence instruction (max 30 words) asking a patient to describe what they see in an image.
+      The instruction should encourage detailed observation and help detect visual hallucinations.
+      Return ONLY the instruction text, no JSON, no markdown, just the instruction.
+    `;
+
+    const result = await generateWithGemini(prompt);
+
+    // Handle different response formats
+    if (typeof result === "string") {
+      // Remove markdown code blocks if present
+      let cleaned = result
+        .replace(/```json\n?/g, "")
+        .replace(/```\n?/g, "")
+        .replace(/"/g, "")
+        .trim();
+
+      if (cleaned.length > 0) {
+        clinicianInstruction = cleaned;
+      }
+    } else if (result && typeof result === "object") {
+      // If it's an object, try to extract text from common fields
+      const text = result.text || result.instruction || result.content || result.message || JSON.stringify(result);
+      if (typeof text === "string" && text.length > 0) {
+        clinicianInstruction = text.trim();
+      }
+    }
+  } catch (error) {
+    console.error("Error generating clinician instruction:", error);
+    // Use fallback instruction
+  }
+
+  // Ensure we have a valid string
+  if (typeof clinicianInstruction !== "string" || clinicianInstruction.length === 0) {
+    clinicianInstruction = fallbackInstruction;
+  }
+
+  // Generate questions with single images
+  const questions = selectedImages.map((imageUrl, idx) => ({
+    id: idx + 1,
     question: clinicianInstruction.trim(),
     data: {
-      imageA: baseImageUrl,
-      imageB: baseImageUrl,
-      transform: v.transform,
-      isSame: v.isSame,
+      imageUrl: imageUrl,
     },
   }));
 
-  return { baseImageUrl, questions };
+  return { questions };
 }
 
 export async function saveVisuospatialResult(userId: string, body: any) {
-  const { questionId, userAnswer, isSame, reactionTime, baseImageUrl } = body;
+  const { questionId, userDescription, imageUrl, reactionTime } = body;
 
-  const correct =
-    (userAnswer === "same" && isSame) ||
-    (userAnswer === "different" && !isSame);
-
+  // Store the user's description - can be analyzed later for hallucinations
+  // For now, we'll save it and can add AI analysis later
   return await VisuospatialResult.create({
     userId,
     questionId,
-    baseImageUrl,
-    userAnswer,
-    isCorrect: correct,
+    baseImageUrl: imageUrl,
+    userAnswer: userDescription, // Store the description as userAnswer
+    userDescription: userDescription, // Also store in a dedicated field if model supports it
     reactionTime,
-    mistakes: correct ? [] : ["visual mismatch"],
+    timestamp: new Date(),
   });
 }

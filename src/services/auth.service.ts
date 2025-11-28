@@ -61,18 +61,23 @@ async function register(data: any) {
 
 async function login(email: string, password: string) {
   const user = await User.findOne({ email });
-  if (!user) throw new Error("Invalid credentials");
+  if (!user) throw new Error("Invalid email or password");
 
   const match = await comparePassword(password, user.password);
-  if (!match) throw new Error("Invalid credentials");
+  if (!match) throw new Error("Invalid email or password");
 
-  const token = createAccessToken(user._id.toString());
+  const userId = user._id?.toString() || user.id?.toString();
+  if (!userId) throw new Error("User ID not found");
+
+  const token = createAccessToken(userId);
 
   return {
     user: {
-      id: user._id,
+      id: userId,
       name: user.name,
       email: user.email,
+      age: user.age,
+      gender: user.gender,
     },
     token,
   };

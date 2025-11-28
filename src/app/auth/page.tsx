@@ -38,6 +38,11 @@ export default function AuthPage() {
       });
 
       const data = await response.json();
+      
+      // Log for debugging
+      if (!response.ok) {
+        console.error("Login error:", data);
+      }
 
       if (response.ok && data.success) {
         // Store token in localStorage and update auth state
@@ -45,7 +50,7 @@ export default function AuthPage() {
         const user = data.data?.user;
         
         if (token && user) {
-          login(token, user);
+          await login(token, user);
           // Check if profile is complete (has age and gender)
           const hasProfile = user.age && user.gender;
           // Redirect to profile setup if incomplete, otherwise dashboard
@@ -59,7 +64,7 @@ export default function AuthPage() {
         if (data.errors && Array.isArray(data.errors)) {
           setError(data.errors.join(", "));
         } else {
-          setError(data.message || "An error occurred");
+          setError(data.message || "Invalid email or password");
         }
       }
     } catch (err: any) {

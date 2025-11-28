@@ -1,6 +1,6 @@
-import resultsRepo from "@/src/repositories/gameResults.repository";
-import { connectDB } from "@/src/config/db";
-import { requireAuth } from "@/src/middlewares/auth.middleware";
+import resultsRepo from "@/repositories/gameResults.repository";
+import { connectDB } from "@/config/db";
+import { requireAuth } from "@/middlewares/auth.middleware";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
