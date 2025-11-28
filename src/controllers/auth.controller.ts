@@ -19,13 +19,14 @@ async function login(body: any) {
       success(
         {
           user: response.user,
+          token: response.token,
           tokenSet: true,
         },
         200
       )
     );
 
-    // Set HttpOnly cookie
+    // Set HttpOnly cookie (for server-side requests)
     res.cookies.set("token", response.token, {
       httpOnly: true,
       secure: true,
@@ -35,8 +36,31 @@ async function login(body: any) {
     });
 
     return res;
-  } catch (err) {
-    return NextResponse.json(failure(err), { status: 400 });
+  } catch (err: any) {
+    // Handle Zod validation errors
+    if (err.name === "ZodError") {
+      const errorMessages = err.errors.map((e: any) => {
+        const field = e.path.join(".");
+        return `${field}: ${e.message}`;
+      });
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Validation failed",
+          errors: errorMessages,
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Handle other errors
+    return NextResponse.json(
+      {
+        success: false,
+        message: err.message || "Login failed",
+      },
+      { status: 400 }
+    );
   }
 }
 
@@ -44,9 +68,44 @@ async function register(body: any) {
   try {
     const data = registerSchema.parse(body);
     const result = await authService.register(data);
-    return NextResponse.json(success(result, 201));
-  } catch (err) {
-    return NextResponse.json(failure(err), { status: 400 });
+    
+    const res = NextResponse.json(success(result, 201));
+
+    // Set HttpOnly cookie (for server-side requests)
+    res.cookies.set("token", result.token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60,
+    });
+
+    return res;
+  } catch (err: any) {
+    // Handle Zod validation errors
+    if (err.name === "ZodError") {
+      const errorMessages = err.errors.map((e: any) => {
+        const field = e.path.join(".");
+        return `${field}: ${e.message}`;
+      });
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Validation failed",
+          errors: errorMessages,
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Handle other errors
+    return NextResponse.json(
+      {
+        success: false,
+        message: err.message || "Registration failed",
+      },
+      { status: 400 }
+    );
   }
 }
 

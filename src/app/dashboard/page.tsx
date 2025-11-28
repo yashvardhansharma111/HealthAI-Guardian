@@ -9,20 +9,27 @@ import Navbar from "@/app/components/Navbar";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user, loading, isAuthenticated, isProfileComplete } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const [checkingProfile, setCheckingProfile] = useState(true);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (mounted && !loading && !isAuthenticated) {
-      router.push("/auth");
+    if (mounted && !loading) {
+      if (!isAuthenticated) {
+        router.push("/auth");
+      } else if (!isProfileComplete) {
+        router.push("/profile-setup");
+      } else {
+        setCheckingProfile(false);
+      }
     }
-  }, [mounted, loading, isAuthenticated, router]);
+  }, [mounted, loading, isAuthenticated, isProfileComplete, router]);
 
-  if (!mounted || loading) {
+  if (!mounted || loading || checkingProfile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -30,7 +37,7 @@ export default function DashboardPage() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !isProfileComplete) {
     return null;
   }
 

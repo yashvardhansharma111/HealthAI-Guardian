@@ -12,11 +12,11 @@ const userSchema = new mongoose.Schema(
     // ========================
     // Personal Information
     // ========================
-    age: { type: Number, required: true },
+    age: { type: Number, required: false },
     gender: {
       type: String,
       enum: ["male", "female", "other"],
-      required: true,
+      required: false,
     },
 
     education: {
@@ -75,13 +75,8 @@ const userSchema = new mongoose.Schema(
     // ========================
     lifestyle: {
       smoking: {
-        type: String,
-        default: "never",
-        frequency: {
-          type: String,
-          enum: ["never", "rarely", "occasionally", "weekly", "daily"],
-          default: "never",
-        },
+        type: mongoose.Schema.Types.Mixed,
+        default: () => ({ type: "never", frequency: "never" }),
       },
       alcoholUse: {
         frequency: {

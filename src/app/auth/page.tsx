@@ -8,9 +8,11 @@ import { Input } from "@/app/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Shield, Mail, Lock, User, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/app/hooks/useAuth";
 
 export default function AuthPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -38,11 +40,27 @@ export default function AuthPage() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Redirect to dashboard or home
-        router.push("/dashboard");
-        router.refresh();
+        // Store token in localStorage and update auth state
+        const token = data.data?.token;
+        const user = data.data?.user;
+        
+        if (token && user) {
+          login(token, user);
+          // Check if profile is complete (has age and gender)
+          const hasProfile = user.age && user.gender;
+          // Redirect to profile setup if incomplete, otherwise dashboard
+          router.push(hasProfile ? "/dashboard" : "/profile-setup");
+          router.refresh();
+        } else {
+          setError("Authentication failed - missing token");
+        }
       } else {
-        setError(data.message || "An error occurred");
+        // Handle validation errors
+        if (data.errors && Array.isArray(data.errors)) {
+          setError(data.errors.join(", "));
+        } else {
+          setError(data.message || "An error occurred");
+        }
       }
     } catch (err: any) {
       setError(err.message || "An error occurred");

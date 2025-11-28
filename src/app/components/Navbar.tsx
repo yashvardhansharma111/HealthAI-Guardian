@@ -71,13 +71,13 @@ const Navbar = () => {
               <>
                 <Link href="/auth">
                   <Button variant="ghost" size="sm">
-                    Sign In
+                    Login
                   </Button>
                 </Link>
                 <Link href="/auth">
                   <Button size="sm" className="glow-primary">
                     <Sparkles className="w-4 h-4 mr-1" />
-                    Get Started
+                    Sign Up
                   </Button>
                 </Link>
               </>
@@ -132,13 +132,13 @@ const Navbar = () => {
                   <>
                     <Link href="/auth" className="w-full">
                       <Button variant="outline" className="w-full">
-                        Sign In
+                        Login
                       </Button>
                     </Link>
                     <Link href="/auth" className="w-full">
                       <Button className="w-full glow-primary">
                         <Sparkles className="w-4 h-4 mr-1" />
-                        Get Started
+                        Sign Up
                       </Button>
                     </Link>
                   </>

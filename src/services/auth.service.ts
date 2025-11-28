@@ -21,8 +21,8 @@ async function register(data: any) {
     email: data.email,
     password: hashedPassword,
 
-    age: data.age,
-    gender: data.gender,
+    age: data.age || undefined,
+    gender: data.gender || undefined,
 
     education: data.education,
     occupation: data.occupation,

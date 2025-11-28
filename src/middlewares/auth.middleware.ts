@@ -2,27 +2,28 @@ import { NextResponse } from "next/server";
 import { verifyAccessToken } from "../utils/auth";
 
 export function requireAuth(req: Request) {
-  const cookieHeader = req.headers.get("cookie");
+  // Check Authorization header first (for localStorage token)
+  const authHeader = req.headers.get("authorization");
+  let token: string | undefined;
 
-  if (!cookieHeader) {
-    return {
-      error: NextResponse.json(
-        { message: "Authentication cookie missing" },
-        { status: 401 }
-      ),
-    };
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.substring(7);
+  } else {
+    // Fallback to cookie if no Authorization header
+    const cookieHeader = req.headers.get("cookie");
+    if (cookieHeader) {
+      token = cookieHeader
+        .split(";")
+        .map((c) => c.trim())
+        .find((c) => c.startsWith("token="))
+        ?.split("=")[1];
+    }
   }
-
-  const token = cookieHeader
-    .split(";")
-    .map((c) => c.trim())
-    .find((c) => c.startsWith("token="))
-    ?.split("=")[1];
 
   if (!token) {
     return {
       error: NextResponse.json(
-        { message: "Token missing in cookies" },
+        { message: "Authentication token missing" },
         { status: 401 }
       ),
     };
