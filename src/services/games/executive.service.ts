@@ -1,4 +1,4 @@
-import resultsRepo from "@/src/repositories/gameResults.repository";
+import resultsRepo from "@/repositories/gameResults.repository";
 
 const COLORS = ["red", "blue", "green", "yellow"];
 

@@ -3,9 +3,9 @@ import {
   hashPassword,
   comparePassword,
 } from "../utils/auth";
-import User from "@/src/models/user.model";
+import User from "@/models/user.model";
 import bcrypt from "bcryptjs";
-import { createAccessToken } from "@/src/utils/auth";
+import { createAccessToken } from "@/utils/auth";
 
 async function register(data: any) {
   // CHECK IF USER EXISTS

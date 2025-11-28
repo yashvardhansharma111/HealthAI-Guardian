@@ -1,5 +1,5 @@
-import { generateWithGemini } from "@/src/utils/gemini";
-import resultsRepo from "@/src/repositories/gameResults.repository";
+import { generateWithGemini } from "@/utils/gemini";
+import resultsRepo from "@/repositories/gameResults.repository";
 
 async function generateWordSet() {
   const prompt = `
