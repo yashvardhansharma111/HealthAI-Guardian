@@ -7,6 +7,9 @@ import { motion } from "framer-motion";
 import { Shield, Loader2 } from "lucide-react";
 import Navbar from "@/app/components/Navbar";
 import GamesSection from "@/app/components/GamesSection";
+import HealthSimulator from "@/app/components/HealthSimulator";
+import HealthPredictionCard from "@/app/components/HealthPredictionCard";
+import QuestionnaireCard from "@/app/components/QuestionnaireCard";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -97,12 +100,43 @@ export default function DashboardPage() {
             </motion.div>
           </div>
 
+          {/* Health Prediction Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            className="mb-12"
+            id="health-prediction"
+          >
+            <HealthPredictionCard />
+          </motion.div>
+
+          {/* Questionnaire Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.37 }}
+            className="mb-12"
+          >
+            <QuestionnaireCard />
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
+            className="mb-12"
           >
             <GamesSection />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            id="health-simulator"
+          >
+            <HealthSimulator />
           </motion.div>
         </motion.div>
       </main>
