@@ -82,38 +82,62 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-white text-black relative overflow-hidden">
+  
+      {/* 🌟 GLOBAL LIGHT GRID BACKGROUND */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.15]">
+        <div className="w-full h-full bg-[linear-gradient(to_right,#00000012_1px,transparent_1px),linear-gradient(to_bottom,#00000012_1px,transparent_1px)] bg-[size:45px_45px] animate-[gridMove_12s_linear_infinite]"></div>
+      </div>
+  
+      <style jsx>{`
+        @keyframes gridMove {
+          0% { transform: translateY(0px); }
+          100% { transform: translateY(45px); }
+        }
+      `}</style>
+  
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md relative z-10"
       >
-        <Card className="border-border/50 shadow-lg">
-          <CardHeader className="text-center space-y-4">
+  
+        {/* 🌟 LOGIN CARD WITH ITS OWN LIGHT GRID */}
+        <Card className="relative bg-white text-black border-black/10 shadow-xl rounded-2xl overflow-hidden">
+  
+          {/* Sexy soft grid overlay inside card */}
+          <div className="absolute inset-0 opacity-[0.1] pointer-events-none">
+            <div className="w-full h-full bg-[linear-gradient(to_right,#00000010_1px,transparent_1px),linear-gradient(to_bottom,#00000010_1px,transparent_1px)] bg-[size:30px_30px] animate-[gridMove_10s_linear_infinite]"></div>
+          </div>
+  
+          <CardHeader className="text-center space-y-4 relative z-10">
             <div className="flex justify-center">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <Shield className="w-8 h-8 text-primary" />
+              <div className="w-16 h-16 rounded-full bg-black/10 flex items-center justify-center">
+                <Shield className="w-8 h-8 text-black" />
               </div>
             </div>
             <CardTitle className="text-3xl font-bold">
               {isLogin ? "Welcome Back" : "Get Started"}
             </CardTitle>
-            <CardDescription className="text-base">
+            <CardDescription className="text-base text-gray-700">
               {isLogin
                 ? "Sign in to your HealthAI Guardian account"
                 : "Create your account to start your health journey"}
             </CardDescription>
           </CardHeader>
-          <CardContent>
+  
+          <CardContent className="relative z-10">
             <form onSubmit={handleSubmit} className="space-y-4">
+  
+              {/* NAME */}
               {!isLogin && (
                 <div className="space-y-2">
                   <label htmlFor="name" className="text-sm font-medium">
                     Full Name
                   </label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                     <Input
                       id="name"
                       name="name"
@@ -122,18 +146,17 @@ export default function AuthPage() {
                       value={formData.name}
                       onChange={handleChange}
                       required={!isLogin}
-                      className="pl-10"
+                      className="pl-10 bg-white border-black/20 text-black"
                     />
                   </div>
                 </div>
               )}
-
+  
+              {/* EMAIL */}
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium">
-                  Email
-                </label>
+                <label htmlFor="email" className="text-sm font-medium">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                   <Input
                     id="email"
                     name="email"
@@ -142,17 +165,16 @@ export default function AuthPage() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="pl-10"
+                    className="pl-10 bg-white border-black/20 text-black"
                   />
                 </div>
               </div>
-
+  
+              {/* PASSWORD */}
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium">
-                  Password
-                </label>
+                <label htmlFor="password" className="text-sm font-medium">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                   <Input
                     id="password"
                     name="password"
@@ -161,24 +183,26 @@ export default function AuthPage() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="pl-10"
+                    className="pl-10 bg-white border-black/20 text-black"
                   />
                 </div>
               </div>
-
+  
+              {/* ERROR */}
               {error && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-destructive text-sm"
+                  className="p-3 rounded-md bg-red-100 border border-red-300 text-red-700 text-sm"
                 >
                   {error}
                 </motion.div>
               )}
-
+  
+              {/* SUBMIT BTN */}
               <Button
                 type="submit"
-                className="w-full glow-primary"
+                className="w-full bg-black text-white hover:bg-gray-900 transition rounded-xl shadow-md"
                 disabled={loading}
               >
                 {loading ? (
@@ -191,7 +215,8 @@ export default function AuthPage() {
                 )}
               </Button>
             </form>
-
+  
+            {/* SWITCH */}
             <div className="mt-6 text-center">
               <button
                 type="button"
@@ -199,18 +224,19 @@ export default function AuthPage() {
                   setIsLogin(!isLogin);
                   setError("");
                 }}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm text-gray-700 hover:text-black transition"
               >
                 {isLogin
                   ? "Don't have an account? Sign up"
                   : "Already have an account? Sign in"}
               </button>
             </div>
-
+  
+            {/* HOME */}
             <div className="mt-4 text-center">
               <Link
                 href="/"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="text-sm text-gray-700 hover:text-black transition"
               >
                 ← Back to home
               </Link>
@@ -220,5 +246,4 @@ export default function AuthPage() {
       </motion.div>
     </div>
   );
-}
-
+}  

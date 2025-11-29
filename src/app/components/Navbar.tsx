@@ -23,7 +23,7 @@ const Navbar = () => {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50"
+      className="fixed top-0 left-0 right-0 z-50 bg-transparent border-b border-transparent"
     >
       <div className="container px-4">
         <div className="flex items-center justify-between h-16">
@@ -36,7 +36,7 @@ const Navbar = () => {
               <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Shield className="w-5 h-5 text-primary" />
               </div>
-              <span className="font-bold text-lg">
+              <span className="font-bold text-lg text-black">
                 Health<span className="text-primary">AI</span> Guardian
               </span>
             </motion.div>
@@ -48,7 +48,7 @@ const Navbar = () => {
               <a
                 key={link.label}
                 href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors relative group"
+                className="text-sm font-medium text-black hover:text-black/80 transition-colors relative group"
               >
                 {link.label}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
@@ -70,12 +70,12 @@ const Navbar = () => {
             ) : (
               <>
                 <Link href="/auth">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="text-black">
                     Login
                   </Button>
                 </Link>
                 <Link href="/auth">
-                  <Button size="sm" className="glow-primary">
+                  <Button size="sm" className="glow-primary text-black">
                     <Sparkles className="w-4 h-4 mr-1" />
                     Sign Up
                   </Button>
@@ -87,9 +87,9 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+            className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors text-black"
           >
-            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {isOpen ? <X className="w-5 h-5 text-black" /> : <Menu className="w-5 h-5 text-black" />}
           </button>
         </div>
       </div>
@@ -102,7 +102,7 @@ const Navbar = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden border-t border-border bg-background"
+            className="md:hidden border-t border-transparent bg-transparent"
           >
             <div className="container px-4 py-4 space-y-3">
               {navLinks.map((link, index) => (
@@ -113,7 +113,7 @@ const Navbar = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
                   onClick={() => setIsOpen(false)}
-                  className="block py-2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="block py-2 text-black hover:text-black/80 transition-colors"
                 >
                   {link.label}
                 </motion.a>
@@ -136,7 +136,7 @@ const Navbar = () => {
                       </Button>
                     </Link>
                     <Link href="/auth" className="w-full">
-                      <Button className="w-full glow-primary">
+                      <Button className="w-full glow-primary text-black">
                         <Sparkles className="w-4 h-4 mr-1" />
                         Sign Up
                       </Button>

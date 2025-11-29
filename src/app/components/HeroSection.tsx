@@ -13,8 +13,8 @@ const HeroSection = () => {
       {/* Interactive Neural Vortex Background */}
       <InteractiveNeuralVortex className="opacity-90 z-0" />
       
-      {/* Subtle overlay for better text readability */}
-      <div className="absolute inset-0 bg-background/30 z-1" />
+      {/* Transparent overlay */}
+      <div className="absolute inset-0 bg-transparent z-1" />
       
       <div className="container relative z-10 px-4 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -30,10 +30,10 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent border border-primary/20 mb-6"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent border border-primary/20 mb-6 border-black"
             >
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-accent-foreground">AI-Powered Health Monitoring</span>
+              <Sparkles className="w-4 h-4 text-primary text-black" />
+              <span className="text-sm font-medium text-black">AI-Powered Health Monitoring</span>
             </motion.div>
 
             {/* Main Heading */}
@@ -41,12 +41,12 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-black"
             >
               Your AI-Powered{" "}
               <span className="text-gradient">Health Guardian</span>
               <br />
-              <span className="text-foreground/90">Level Up Your Wellness</span>
+              <span className=" text-black">Level Up Your Wellness</span>
             </motion.h1>
 
             {/* Subtext */}
@@ -54,7 +54,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed"
+              className="text-lg md:text-xl text-black max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed"
             >
               HealthAI Guardian helps students proactively monitor chronic disease risks using AI. 
               Track your vitals, complete health quests, unlock wellness badges, and receive 
@@ -71,9 +71,9 @@ const HeroSection = () => {
               <Link href="/auth">
                 <Button
                   size="lg"
-                  className="group relative overflow-hidden glow-primary hover:glow-primary-lg transition-all duration-300 hover:scale-105"
+                  className="group relative overflow-hidden glow-primary hover:glow-primary-lg transition-all duration-300 hover:scale-105 text-black"
                 >
-                  <span className="relative z-10 flex items-center gap-2">
+                  <span className="relative z-10 flex items-center gap-2 ">
                     Start Your Health Journey
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </span>
@@ -86,14 +86,14 @@ const HeroSection = () => {
                   size="lg"
                   className="group border-primary/30 hover:border-primary hover:bg-primary/5 transition-all duration-300 hover:scale-105"
                 >
-                  <Play className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+                  <Play className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform " />
                   Explore Dashboard Demo
                 </Button>
               </Link>
             </motion.div>
 
             {/* Stats */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
@@ -109,7 +109,7 @@ const HeroSection = () => {
                   <div className="text-sm text-muted-foreground">{stat.label}</div>
                 </div>
               ))}
-            </motion.div>
+            </motion.div> */}
           </motion.div>
 
           {/* Right Content - Hero Image */}
@@ -139,22 +139,22 @@ const HeroSection = () => {
                 <motion.div
                   animate={{ y: [0, -8, 0], rotate: [0, 5, 0] }}
                   transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                  className="absolute -top-4 -right-4 bg-card p-3 rounded-2xl card-glow border border-border"
+                  className="absolute -top-4 -right-4 bg-card p-3 rounded-2xl card-glow border border-black"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 text-black border-black">
                     <div className="w-3 h-3 rounded-full bg-health-green animate-pulse" />
-                    <span className="text-sm font-medium">Health Score: 85</span>
+                    <span className="text-sm font-medium text-black">Health Score: 85</span>
                   </div>
                 </motion.div>
 
                 <motion.div
                   animate={{ y: [0, 8, 0], rotate: [0, -3, 0] }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                  className="absolute -bottom-4 -left-4 bg-card p-3 rounded-2xl card-glow border border-border"
+                  className="absolute -bottom-4 -left-4 bg-card p-3 rounded-2xl card-glow border border-black"
                 >
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-quest-gold" />
-                    <span className="text-sm font-medium">+250 XP Earned</span>
+                  <div className="flex items-center gap-2 text-black border-black">
+                    <Sparkles className="w-4 h-4 text-quest-gold text-black" />
+                    <span className="text-sm font-medium text-black">+250 XP Earned</span>
                   </div>
                 </motion.div>
               </motion.div>

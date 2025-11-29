@@ -78,14 +78,14 @@ const AboutSection = () => {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1, duration: 0.4 }}
-            className="inline-block px-4 py-1.5 rounded-full bg-accent text-accent-foreground text-sm font-medium mb-4"
+            className="inline-block px-4 py-1.5 rounded-full bg-accent text-black text-sm font-medium mb-4"
           >
             How It Works
           </motion.span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-black">
             How <span className="text-gradient">HealthAI Guardian</span> Works
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-black max-w-2xl mx-auto">
             Discover how our AI-powered platform transforms your health journey into an engaging, 
             gamified experience with personalized insights.
           </p>
@@ -138,13 +138,13 @@ const AboutSection = () => {
           transition={{ delay: 0.4, duration: 0.6 }}
           className="text-center mt-16"
         >
-          <p className="text-muted-foreground mb-4">
+          <p className="text-muted-foreground mb-4 text-black">
             Ready to take control of your health?
           </p>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-primary-foreground font-medium glow-primary hover:glow-primary-lg transition-all duration-300"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-primary text-black text-primary-foreground font-medium glow-primary hover:glow-primary-lg transition-all duration-300"
           >
             Get Started Free
             <svg

@@ -1,37 +1,32 @@
-import { Shield, Heart } from "lucide-react";
+import React from "react";
 
-const Footer = () => {
+const Footer: React.FC = () => {
   return (
-    <footer className="bg-card border-t border-border py-12">
-      <div className="container px-4">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Shield className="w-4 h-4 text-primary" />
-            </div>
-            <span className="font-bold">
-              Health<span className="text-primary">AI</span> Guardian
-            </span>
-          </div>
-
-          {/* Links */}
-          <nav className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-foreground transition-colors">Support</a>
-            <a href="#" className="hover:text-foreground transition-colors">Contact</a>
-          </nav>
-
-          {/* Copyright */}
-          <p className="text-sm text-muted-foreground flex items-center gap-1">
-            Made with <Heart className="w-3 h-3 text-destructive fill-destructive" /> for students
+    <footer className="w-full bg-white text-black py-8 mt-10 border-t border-gray-300">
+      <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+        
+        {/* Left section */}
+        <div className="text-center md:text-left">
+          <h3 className="text-lg font-semibold">Your Company</h3>
+          <p className="text-sm text-gray-600">
+            © {new Date().getFullYear()} All rights reserved.
           </p>
         </div>
-        
-        <div className="mt-8 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} HealthAI Guardian. All rights reserved.
+
+        {/* Navigation links */}
+        <nav className="flex gap-6 text-sm">
+          <a href="#" className="hover:text-gray-600 transition">Home</a>
+          <a href="#" className="hover:text-gray-600 transition">About</a>
+          <a href="#" className="hover:text-gray-600 transition">Contact</a>
+        </nav>
+
+        {/* Socials */}
+        <div className="flex gap-4 text-sm">
+          <a href="#" className="hover:text-gray-600 transition">Twitter</a>
+          <a href="#" className="hover:text-gray-600 transition">GitHub</a>
+          <a href="#" className="hover:text-gray-600 transition">LinkedIn</a>
         </div>
+
       </div>
     </footer>
   );
