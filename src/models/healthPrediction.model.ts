@@ -49,11 +49,28 @@ const healthPredictionSchema = new mongoose.Schema(
     // Grok insights
     grok_insights: String,
     
+    // Embedding for RAG
+    embedding: {
+      type: [Number],
+      default: undefined,
+    },
+
+    // Disease mapping (diabetes, heart)
+    diseaseType: {
+      type: [String],
+      enum: ["diabetes", "heart", null],
+      default: ["diabetes", "heart"],
+    },
+    
     // Metadata
     timestamp: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
+
+// Index for vector search
+healthPredictionSchema.index({ embedding: "2dsphere" });
+healthPredictionSchema.index({ userId: 1, timestamp: -1 });
 
 export default mongoose.models.HealthPrediction ||
   mongoose.model("HealthPrediction", healthPredictionSchema);

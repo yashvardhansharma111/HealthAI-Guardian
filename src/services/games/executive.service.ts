@@ -1,4 +1,5 @@
 import resultsRepo from "@/repositories/gameResults.repository";
+import { generateGameEmbedding } from "@/services/embeddings.service";
 
 const COLORS = ["red", "blue", "green", "yellow"];
 
@@ -27,7 +28,7 @@ export async function saveStroopResult(userId: string, data: any) {
 
   const correct = userAnswer === inkColor;
 
-  return resultsRepo.saveResult({
+  const resultData = {
     userId,
     gameType: "executive_stroop",
     inputData: { questionId, word, inkColor },
@@ -35,5 +36,15 @@ export async function saveStroopResult(userId: string, data: any) {
     accuracy: correct ? 1 : 0,
     reactionTime,
     mistakes: correct ? [] : ["interference_error"],
+    diseaseType: "dementia" as const,
+    timestamp: new Date(),
+  };
+
+  // Generate embedding
+  const embedding = await generateGameEmbedding(resultData);
+
+  return resultsRepo.saveResult({
+    ...resultData,
+    embedding,
   });
 }

@@ -3,6 +3,7 @@ import { requireAuth } from "@/middlewares/auth.middleware";
 import { connectDB } from "@/config/db";
 import HealthPrediction from "@/models/healthPrediction.model";
 import { success, failure } from "@/utils/apiResponse";
+import { generateHealthEmbedding } from "@/services/embeddings.service";
 
 const FASTAPI_URL = process.env.NEXT_PUBLIC_FASTAPI_URL || process.env.FASTAPI_URL || "http://localhost:8000";
 
@@ -60,14 +61,23 @@ export async function POST(req: Request) {
       const data = await response.json();
 
       if (data.ok && data.ml_output) {
-        // Save to database
+        // Save to database with embedding
         try {
-          await HealthPrediction.create({
+          const predictionData = {
             userId: authResult.user.id,
             input: data.input,
             ml_output: data.ml_output,
             grok_insights: data.grok_insights || "",
             timestamp: new Date(),
+          };
+
+          // Generate embedding
+          const embedding = await generateHealthEmbedding(predictionData);
+
+          await HealthPrediction.create({
+            ...predictionData,
+            embedding,
+            diseaseType: ["diabetes", "heart"],
           });
         } catch (dbError: any) {
           console.error("Failed to save health prediction:", dbError);

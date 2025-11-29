@@ -1,6 +1,7 @@
 import { VISUOSPATIAL_IMAGES } from "@/data/visuospatialBaseImages";
 import { generateWithGemini } from "@/utils/gemini";
 import VisuospatialResult from "@/models/visuospatialResult.model";
+import { generateGameEmbedding } from "@/services/embeddings.service";
 
 export async function generateVisuospatialSession() {
   // Pick random images for the session (3 different images)
@@ -74,8 +75,20 @@ export async function generateVisuospatialSession() {
 export async function saveVisuospatialResult(userId: string, body: any) {
   const { questionId, userDescription, imageUrl, reactionTime } = body;
 
+  // Generate embedding for the result
+  const resultData = {
+    gameType: "visuospatial_mentalrotation",
+    accuracy: 1, // Descriptive answers don't have binary accuracy
+    reactionTime,
+    errors: [],
+    inputData: { questionId, imageUrl },
+    userResponse: { userDescription },
+    timestamp: new Date(),
+  };
+
+  const embedding = await generateGameEmbedding(resultData);
+
   // Store the user's description - can be analyzed later for hallucinations
-  // For now, we'll save it and can add AI analysis later
   return await VisuospatialResult.create({
     userId,
     questionId,
@@ -83,6 +96,8 @@ export async function saveVisuospatialResult(userId: string, body: any) {
     userAnswer: userDescription, // Store the description as userAnswer
     userDescription: userDescription, // Also store in a dedicated field if model supports it
     reactionTime,
+    embedding,
+    diseaseType: "dementia",
     timestamp: new Date(),
   });
 }

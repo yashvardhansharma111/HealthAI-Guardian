@@ -267,6 +267,31 @@ export default function QuestionnairePage() {
       const data = await response.json();
 
       if (data.success) {
+        // Also save to MongoDB with embedding
+        try {
+          const saveResponse = await fetch("/api/questionnaire/save", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              sessionId,
+              questionId: currentQuestion + 1,
+              questionText: QUESTIONS[currentQuestion],
+              answer: answers[currentQuestion],
+              videoAnalysis: data.data?.video_analysis,
+              keystrokeAnalysis: data.data?.keystroke_analysis,
+            }),
+          });
+
+          if (!saveResponse.ok) {
+            console.error("Failed to save questionnaire to MongoDB");
+          }
+        } catch (saveError) {
+          console.error("Error saving questionnaire:", saveError);
+        }
+
         toast({
           title: "Success",
           description: "Question submitted successfully",

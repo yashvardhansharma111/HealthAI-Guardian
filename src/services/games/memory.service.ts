@@ -103,6 +103,8 @@ export async function generateWordList() {
   }
 }
 
+import { generateGameEmbedding } from "@/services/embeddings.service";
+
 export async function saveWordRecallResult(userId: string, data: any) {
   const { questionId, shownWords, recalledWords, reactionTime } = data;
 
@@ -114,7 +116,7 @@ export async function saveWordRecallResult(userId: string, data: any) {
 
   const mistakes = shownWords.filter((w: string) => !recalledWords.includes(w));
 
-  return resultsRepo.saveResult({
+  const resultData = {
     userId,
     gameType: "memory_wordlist",
     inputData: { questionId, shownWords },
@@ -122,5 +124,15 @@ export async function saveWordRecallResult(userId: string, data: any) {
     accuracy,
     reactionTime,
     mistakes,
+    diseaseType: "alzheimers" as const,
+    timestamp: new Date(),
+  };
+
+  // Generate embedding
+  const embedding = await generateGameEmbedding(resultData);
+
+  return resultsRepo.saveResult({
+    ...resultData,
+    embedding,
   });
 }

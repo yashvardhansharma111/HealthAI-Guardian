@@ -10,6 +10,7 @@ import GamesSection from "@/app/components/GamesSection";
 import HealthSimulator from "@/app/components/HealthSimulator";
 import HealthPredictionCard from "@/app/components/HealthPredictionCard";
 import QuestionnaireCard from "@/app/components/QuestionnaireCard";
+import DashboardAnalytics from "@/app/components/DashboardAnalytics";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -119,6 +120,16 @@ export default function DashboardPage() {
             className="mb-12"
           >
             <QuestionnaireCard />
+          </motion.div>
+
+          {/* Dashboard Analytics */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.38 }}
+            className="mb-12"
+          >
+            <DashboardAnalytics />
           </motion.div>
 
           <motion.div

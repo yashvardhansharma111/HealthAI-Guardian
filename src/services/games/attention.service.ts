@@ -1,4 +1,5 @@
 import resultsRepo from "@/repositories/gameResults.repository";
+import { generateGameEmbedding } from "@/services/embeddings.service";
 
 function generateDigits(length = 6) {
   return Array.from({ length }, () => Math.floor(Math.random() * 10));
@@ -22,14 +23,25 @@ export async function saveDigitSpanResult(userId: string, data: any) {
   const { questionId, shownDigits, userDigits, reactionTime } = data;
 
   const correct = JSON.stringify(shownDigits) === JSON.stringify(userDigits);
+  const accuracy = correct ? 1 : 0;
 
-  return resultsRepo.saveResult({
+  const resultData = {
     userId,
     gameType: "attention_digitspan",
     inputData: { questionId, shownDigits },
     userResponse: { userDigits },
-    accuracy: correct ? 1 : 0,
+    accuracy,
     reactionTime,
     mistakes: correct ? [] : ["wrong_order"],
+    diseaseType: "alzheimers" as const,
+    timestamp: new Date(),
+  };
+
+  // Generate embedding
+  const embedding = await generateGameEmbedding(resultData);
+
+  return resultsRepo.saveResult({
+    ...resultData,
+    embedding,
   });
 }
